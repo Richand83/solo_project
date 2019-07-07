@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>reset password</title>
+    <title>Profile</title>
 </head>
 <body>
-    <form action="/reset_pw" method="post">
+    <h2>Welcome some jinja here when ready</h2>
+    <form action="/security_questions" method="post">
         <h3>Choose one:</h3>
-        <label for="email">User name:</label>
-        <input type="text" name="email" id="#" placeholder="johndoe@email.com">
         <ul>
             <ol>
                 <li>
@@ -24,26 +23,11 @@
                 <li>
                     <label for="question-three">What is your car’s license plate number?</label>
                     <input type="text" name="question-three" id="">
-                    <label for="password">New Password</label>
-                    <input type="password" name="password" id="#">
                 </li>
             </ol>
         </ul>
         <input type="submit" value="Submit">
-    </form>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <p>{{message}}</p>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
 
-
-    <form action="/reset_pw" method="post">
-        <label for="email">User name:</label>
-        <input type="text" name="email" id="#" placeholder="johndoe@email.com">
-        <input type="submit" name="submit" id="" value="Login">
     </form>
 </body>
 </html>
