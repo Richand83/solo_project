@@ -79,7 +79,7 @@ def login():
 def username_validation():
     print(request.form)
     found = False
-    mysql = connectToMySQL('team_db')        # connect to the database
+    mysql = connectToMySQL('dojo_tweets')        # connect to the database
     query = "SELECT email FROM users WHERE email = %(data)s;"
     data = { "data": request.form["email"] }
     result = mysql.query_db(query, data)
