@@ -72,6 +72,21 @@ def login():
             return redirect('/user_page')
     flash('You could not be logged in check your username and password')
     return redirect('/')
+
+
+#ajax validation
+@app.route("/username", methods=['POST'])
+def username_validation():
+    print(request.form)
+    found = False
+    mysql = connectToMySQL('team_db')        # connect to the database
+    query = "SELECT email FROM users WHERE email = %(data)s;"
+    data = { "data": request.form["email"] }
+    result = mysql.query_db(query, data)
+    if result:
+        found = True
+    return render_template('partials/user_validation.html', found=found)
+
 #log off
 @app.route('/logout')
 def logout():
