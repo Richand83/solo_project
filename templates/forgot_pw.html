@@ -7,6 +7,7 @@
     <title>reset password</title>
 </head>
 <body>
+    <!-- resets password -->
     <form action="/reset_pw" method="post">
         <h3>Choose one:</h3>
         <label for="email">User name:</label>
@@ -31,6 +32,7 @@
         </ul>
         <input type="submit" value="Submit">
     </form>
+    <!-- displays error message -->
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
@@ -38,12 +40,5 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
-
-
-    <form action="/reset_pw" method="post">
-        <label for="email">User name:</label>
-        <input type="text" name="email" id="#" placeholder="johndoe@email.com">
-        <input type="submit" name="submit" id="" value="Login">
-    </form>
 </body>
 </html>

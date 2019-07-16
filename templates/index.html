@@ -4,38 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
     <title>project-home L&R</title>
 </head>
 <body>
-    <h1>Register:</h1>
-    <form action="/register" method="post">
-        <label for="first_name">First Name</label>
-        <input type="text" name="fname" id="#">
-        <label for="last_name">Last Name</label>
-        <input type="text" name="lname" id="#">
-        <label for="email">Email</label>
-        <input type="text" name="email" id="#">
-        <label for="password">Password</label>
-        <input type="password" name="password" id="#">
-        <label for="conf_password">Confirm Password</label>
-        <input type="password" name="conf_password" id="#">
-        <input type="submit" name="submit" id="" value="Register">
-    </form>
-    <h1>Login:</h1>
-    <form action="/login" method="post">
-        <label for="email">User name:</label>
-        <input type="text" name="email" id="#" placeholder="johndoe@email.com">
-        <label for="password">Password</label>
-        <input type="password" name="password" id="#">
-        <input type="submit" name="submit" id="" value="Login">
-    </form>
-    <a href="/forgot_pass">Forgot Password</a>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <p>{{message}}</p>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+    <div class="container">
+        <h1>Register:</h1>
+        <form action="/register" method="post">
+            <div class="form-group">
+                <label for="first_name">First Name:</label>
+                <input type="text" class="form-control" name="fname" id="#">
+            </div>
+            <div class="form-group">
+                <label for="last_name">Last Name:</label>
+                <input type="text" class="form-control" name="lname" id="#">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="text" class="form-control" name="email" id="#">
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" class="form-control" name="password" id="#">
+            </div>
+            <div class="form-group">
+                <label for="conf_password">Confirm Password:</label>
+                <input type="password" class="form-control" name="conf_password" id="#">
+            </div>
+
+            <input type="submit" name="submit" id="" value="Register">
+        </form>
+        <h1>Login:</h1>
+        <form action="/login" method="post">
+            <div class="form-group">
+                <label for="email">User name:</label>
+                <input type="text" name="email" class="form-control" id="#" placeholder="johndoe@email.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" class="form-control" name="password" id="#">
+            </div>
+            <input type="submit" name="submit" id="" value="Login">
+        </form>
+        <a href="/forgot_pass">Forgot Password</a>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <p>{{message}}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
 </body>
 </html>

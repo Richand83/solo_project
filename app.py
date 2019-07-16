@@ -1,4 +1,4 @@
-from flask import Flask, redirect, session, render_template, request, redirect,session, flash, url_for
+from flask import Flask, redirect, session, render_template, request,session, flash, url_for
 from mysqlconnection import connectToMySQL
 app = Flask(__name__)    
 app.secret_key = "keep it secret, keep it safe"
@@ -50,32 +50,29 @@ def add_users():
             "pw": pw_hash
         }
         #store in DB redirect to users page
-        mysql.query_db(query,data)
+        new_user_id = mysql.query_db(query,data)
         flash("User successfully added!")
-        session['name'] = request.form["fname"]
+        session['greetings'] = request.form["fname"]
+        session['user_id'] = new_user_id
     return redirect("/profile" )
 
 # Login route
 
 @app.route("/login", methods=['POST'])
 def login():
-    mysql = connectToMySQL('team_db')
-    query = "SELECT * FROM users WHERE email = %(email)s;"
-    data = {
-        "email": request.form["email"]
-    }
-    login_info = mysql.query_db(query,data)
-    if login_info:
-        if bcrypt.check_password_hash(login_info[0]['password'], request.form['password']):
-            session['user_id'] = login_info[0]['user_id']
-            session['greetings'] = login_info[0]['first_name']
-            return redirect('/user_page') #when logging in skip the security questions
-    else:
-        flash('invalid user name or password')
-        return redirect('/')
-
+    mysql = connectToMySQL("team_db")
+    query = "SELECT * FROM users WHERE email = %(em)s;"
+    data = { "em" : request.form["email"] }
+    login_information = mysql.query_db(query, data)
+    print(login_information)
+    if login_information:
+        if bcrypt.check_password_hash(login_information[0]['password'], request.form['password']):
+            session['user_id'] = login_information[0]['id']
+            session['greetings'] = login_information[0]['first_name']
+            return redirect('/user_page')
+    flash('You could not be logged in check your username and password')
+    return redirect('/')
 #log off
-
 @app.route('/logout')
 def logout():
     session.clear()
@@ -89,41 +86,14 @@ def profile_page():
     return render_template("landing_page.html")
 
 #forgot password route
+
 @app.route("/forgot_pass")
 def update_pass():
 
     return render_template("forgot_pw.html")
 
-@app.route("/security_questions", methods=['POST'])
-def security():
-    valid_form = False
-    if len(request.form['question-one']) > 1:
-        valid_form = True
-        form_input = request.form['question-one']
-    if len(request.form['question-two']) > 1:
-        valid_form = True
-        form_input = request.form['question-two']
-    if len(request.form['question-three']) > 1:
-        valid_form = True
-        form_input = request.form['question-three']
-    if valid_form:
-        print(form_input)
-        print(session['user_id'])
-        mysql = connectToMySQL('team_db')
-        query = "UPDATE users SET security_question = %(question)s WHERE user_id = %(u_id)s"
-        data = {
-            "question": form_input,
-            "u_id": session['user_id']
-        }
-        mysql.query_db(query,data)
-        return redirect('/user_page') # when done setting up profile go to users_page
-
-@app.route("/user_page")
-def user_page():
-
-    return render_template('user_page.html')
-
 # reset password route
+# resets password if security answer is in the db
 
 @app.route("/reset_pw", methods=['POST'])
 def reset():
@@ -161,5 +131,107 @@ def reset():
 
 
     return redirect('/forgot_pass')
+
+
+# user sets sec question and is updated in the db
+@app.route("/security_questions", methods=['POST'])
+def security():
+    valid_form = False
+    if len(request.form['question-one']) > 1:
+        valid_form = True
+        form_input = request.form['question-one']
+    if len(request.form['question-two']) > 1:
+        valid_form = True
+        form_input = request.form['question-two']
+    if len(request.form['question-three']) > 1:
+        valid_form = True
+        form_input = request.form['question-three']
+    if valid_form:
+        print(form_input)
+        print(session['user_id'])
+        mysql = connectToMySQL('team_db')
+        query = "UPDATE users SET security_question = %(question)s WHERE id = %(u_id)s"
+        data = {
+            "question": form_input,
+            "u_id": session['user_id']
+        }
+        mysql.query_db(query,data)
+
+        # when done setting up profile go to users_page
+        return redirect('/user_page') 
+
+
+# renders the landing page for user
+@app.route("/user_page")
+def user_page():
+    mysql = connectToMySQL('team_db')
+    query = "SELECT * FROM posts JOIN users ON users.id = posts.user_id"
+    posts = mysql.query_db(query)
+    # for post in posts:
+    mysql = connectToMySQL('team_db')
+    query = "SELECT * FROM comments JOIN users ON user_id = users.id"
+    comments = mysql.query_db(query)
+ 
+    return render_template('user_page.html', posts = posts, all_comments = comments)
+
+@app.route("/make_post", methods=['POST'])
+def post_message():
+    mysql=connectToMySQL('team_db')
+    query = "INSERT INTO posts (post, created_at, updated_at, user_id) VALUES ( %(post)s, NOW(), NOW(), %(u_id)s) "
+    data = {
+        "post": request.form['post'],
+        "u_id": session['user_id']
+    }
+    mysql.query_db(query, data)
+    return redirect('/user_page')
+
+@app.route("/comment", methods=['POST'])
+def make_a_comment():
+    mysql = connectToMySQL('team_db')
+    query = "INSERT INTO comments ( comment, user_id, post_id ) VALUES ( %(comment)s, %(uid)s, %(pid)s )"
+    data = {
+        "comment": request.form['comment_text'],
+        "uid": session['user_id'],
+        "pid": request.form['post_id']
+    }
+    mysql.query_db(query, data)
+    return redirect('/user_page')
+
+@app.route("/delete", methods=['POST'])
+def delete_post():
+    mysql = connectToMySQL('team_db')
+    query = "DELETE FROM comments WHERE post_id = %(pid)s"
+    data = {
+        "pid": request.form['post_id']
+    }
+    mysql.query_db(query, data)
+    mysql = connectToMySQL('team_db')
+    query = "DELETE FROM posts WHERE id = %(pid)s "
+    data = {
+        "pid": request.form['post_id']
+    }
+    mysql.query_db(query, data)
+    return redirect('/user_page')
+
+@app.route("/update/<id>")
+def update_post(id):
+    mysql = connectToMySQL('team_db')
+    query = "SELECT * FROM posts WHERE id = %(pid)s "
+    data = {
+        "pid": id
+    }
+    post = mysql.query_db(query, data)
+    return render_template('update_post.html', posts = post)
+
+@app.route("/update_post", methods=['POST'])
+def update():
+    mysql = connectToMySQL('team_db')
+    query = "UPDATE posts SET post = %(update)s WHERE id = %(pid)s "
+    data = {
+        "update": request.form['updated_text'],
+        "pid": request.form['post_id']
+    }
+    mysql.query_db(query, data)
+    return redirect('/user_page')
 if __name__=="__main__":   
     app.run(debug=True) 
