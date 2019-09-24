@@ -1,2 +1,2 @@
 # solo_project
-# Courtney_Richard
+The Goal here was to be able to have team communications happen all in one place to better organize strategically within one team instead of everywhere on various different platforms. In reality it was just to show off abilities of CRUD and Restful Practices from Coding Dojo BootCamp. This project as i've recognized has several security risks and bugs. it's the Minimum Viable Product of something that will continue to grow or possibly be scrapped and reworked knowing the amount of errors that are visible. I'll continue ot display it here to show how far i've from beginning to the future. 
